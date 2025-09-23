@@ -61,8 +61,10 @@
         if (this == NULL)                                                   \
             error("failed allocation");                                     \
                                                                             \
-        this->ring = new_ring();                                            \
-        this->functions = &stack_functions_##N;                             \
+        this->ring = new_ring(stack_##N);                                   \
+        this->functions = &stack_funcs_##N;                                 \
+                                                                            \
+        return this;                                                        \
     }                                                                       \
                                                                             \
     static inline Stack_##N *stack_copy_stack_##N(const Stack_##N *other)   \
@@ -71,8 +73,10 @@
         if (this == NULL)                                                   \
             error("failed allocation");                                     \
                                                                             \
-        this->ring = copy_ring(other->ring);                                \
-        this->functions = &stack_functions_##N;                             \
+        this->ring = copy_ring(stack_##N, other->ring);                     \
+        this->functions = &stack_funcs_##N;                                 \
+                                                                            \
+        return this;                                                        \
     }                                                                       \
                                                                             \
     static inline Stack_##N *stack_move_stack_##N(Stack_##N *other)         \
@@ -81,13 +85,15 @@
         if (this == NULL)                                                   \
             error("failed allocation");                                     \
                                                                             \
-        this->ring = move_ring(other->ring);                                \
-        this->functions = &stack_functions_##N;                             \
+        this->ring = move_ring(stack_##N, other->ring);                     \
+        this->functions = &stack_funcs_##N;                                 \
+                                                                            \
+        return this;                                                        \
     }                                                                       \
                                                                             \
     static inline void stack_delete_stack_##N(Stack_##N *this)              \
     {                                                                       \
-        delete_ring(ring_##N, this->ring);                                  \
+        delete_ring(stack_##N, this->ring);                                 \
         free(this);                                                         \
     }                                                                       \
                                                                             \
@@ -113,7 +119,7 @@
                                                                             \
     static inline T *stack_top_##N(Stack_##N *this)                         \
     {                                                                       \
-        return back(this->ring);                                            \
+        return &back(this->ring);                                           \
     }                                                                       \
                                                                             \
     static inline void stack_clear_##N(Stack_##N *this)                     \

@@ -111,7 +111,7 @@
         this->vec = copy_vector(ring_##N, other->vec);                     \
         this->head = other->head;                                          \
         this->tail = other->tail;                                          \
-        this->functions = &ring_funcs_##N;                                 \
+        this->functions = &ring_funcs_##N;                             \
                                                                            \
         return this;                                                       \
     }                                                                      \
@@ -128,7 +128,7 @@
         this->vec = move_vector(ring_##N, other->vec);                     \
         this->head = other->head;                                          \
         this->tail = other->tail;                                          \
-        this->functions = &ring_funcs_##N;                                 \
+        this->functions = &ring_funcs_##N;                             \
                                                                            \
         other->head = 0;                                                   \
         other->tail = 0;                                                   \

@@ -8,6 +8,8 @@
 #define VECTOR_RESIZE_vector 0
 #define VECTOR_RESIZE_string 1
 #define VECTOR_RESIZE_ring 0
+#define VECTOR_RESIZE_stack 0
+#define VECTOR_RESIZE_queue 0
 
 #define DEFINE_VECTOR(T, N) DEFINE_VECTOR_IMPL(T, N, vector)
 #define DEFINE_VECTOR_IMPL(T, N, E)                                                                  \

@@ -5,7 +5,6 @@
 
 DEFINE_STRING(char, char)
 
-
 void print_string(String(char) *s, const char *label)
 {
     if (s == NULL)
