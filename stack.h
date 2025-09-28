@@ -93,6 +93,9 @@
                                                                             \
     static inline void stack_delete_stack_##N(Stack_##N *this)              \
     {                                                                       \
+        if (this == NULL)                                                   \
+            return;                                                         \
+                                                                            \
         delete_ring(stack_##N, this->ring);                                 \
         free(this);                                                         \
     }                                                                       \

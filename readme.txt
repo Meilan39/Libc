@@ -114,7 +114,7 @@ T *top(Stack(T) *this);
 
 void clear(Stack(T) *this);
 void push(Stack(T) *this, T data);
-char pop(Stack(T) *this);
+void pop(Stack(T) *this);
 
 Queue
 
@@ -132,4 +132,28 @@ T *back(Queue(T) *this);
 
 void clear(Queue(T) *this);
 void push(Queue(T) *this, T data);
-char pop(Queue(T) *this);
+void pop(Queue(T) *this);
+
+Heap
+
+Heap(T)* new_heap(T);
+Heap(T)* new_heap(T, int isMin);
+Heap(T)* new_heap(T, int isMin, size_t size);
+Heap(T)* new_heap(T, int isMin, size_t size, T data);
+Heap(T)* copy_heap(T, const Heap(T)* other);
+Heap(T)* move_heap(T, Heap(T)* other);
+void delete_heap(Heap(T) *this);
+
+void set_compare(Heap(T) *this, int (*cmp)(const T*, const T*))
+
+int empty(Heap(T) *this);
+void reserve(Heap(T) *this, size_t size);
+size_t size(Heap(T) *this);
+size_t capacity(Heap(T) *this);
+T *top(Heap(T) *this);
+
+void clear(Heap(T) *this);
+void push(Heap(T) *this, T data);
+void pop(Heap(T) *this);
+void heapify(Heap(T) *this);
+void push_back(Heap(T) *this, T data);

@@ -9,6 +9,7 @@
 
 #define LIBCMAX(a, b) (a > b ? a : b)
 #define LIBCMIN(a, b) (a < b ? a : b)
+#define LIBCSWAP(T, a, b) T temp = *(a); *(a) = *(b); *(b) = temp;
 
 static void error(const char* message) {
     fprintf(stderr, "Libc error : %s\n", message);

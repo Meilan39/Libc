@@ -111,7 +111,7 @@
         this->vec = copy_vector(ring_##N, other->vec);                     \
         this->head = other->head;                                          \
         this->tail = other->tail;                                          \
-        this->functions = &ring_funcs_##N;                             \
+        this->functions = &ring_funcs_##N;                                 \
                                                                            \
         return this;                                                       \
     }                                                                      \
@@ -128,7 +128,7 @@
         this->vec = move_vector(ring_##N, other->vec);                     \
         this->head = other->head;                                          \
         this->tail = other->tail;                                          \
-        this->functions = &ring_funcs_##N;                             \
+        this->functions = &ring_funcs_##N;                                 \
                                                                            \
         other->head = 0;                                                   \
         other->tail = 0;                                                   \
@@ -139,7 +139,7 @@
     static inline void ring_delete_ring_##N(Ring_##N *this)                \
     {                                                                      \
         if (this == NULL)                                                  \
-            error("delete called on NULL " #E);                            \
+            return;                                                        \
                                                                            \
         delete_vector(ring_##N, this->vec);                                \
         free(this);                                                        \
@@ -147,6 +147,9 @@
                                                                            \
     static inline int ring_empty_##N(Ring_##N *this)                       \
     {                                                                      \
+        if (this == NULL)                                                  \
+            error("empty called on NULL " #E);                           \
+                                                                           \
         return empty(this->vec);                                           \
     }                                                                      \
                                                                            \
@@ -160,11 +163,17 @@
                                                                            \
     static inline size_t ring_size_##N(Ring_##N *this)                     \
     {                                                                      \
+        if (this == NULL)                                                  \
+            error("size called on NULL " #E);                           \
+                                                                           \
         return size(this->vec);                                            \
     }                                                                      \
                                                                            \
     static inline size_t ring_capacity_##N(Ring_##N *this)                 \
     {                                                                      \
+        if (this == NULL)                                                  \
+            error("capacity called on NULL " #E);                           \
+                                                                           \
         return capacity(this->vec);                                        \
     }                                                                      \
                                                                            \
@@ -190,6 +199,9 @@
                                                                            \
     static inline void ring_clear_##N(Ring_##N *this)                      \
     {                                                                      \
+        if (this == NULL)                                                  \
+            error("clear called on NULL " #E);                           \
+                                                                           \
         clear(this->vec);                                                  \
         this->head = 0;                                                    \
         this->tail = 0;                                                    \

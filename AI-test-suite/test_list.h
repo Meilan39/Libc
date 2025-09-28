@@ -39,7 +39,7 @@ void test_list() {
 
     printf("\n-- Testing filled constructor (new_list_filled) --\n");
     List(char) *filled_string = new_list(char, 4, 'a'); // Create a list of four 99s
-    printf("Verifying at(2) == a: %s\n", at(filled_list, 2) == 'a' ? "OK" : "FAIL");
+    printf("Verifying at(2) == a: %s\n", at(filled_string, 2) == 'a' ? "OK" : "FAIL");
     delete_list(char, filled_string);
     
     printf("\n-- Testing copy constructor (copy_list) --\n");

@@ -10,13 +10,13 @@
     char: '\0',                          \
     wchar_t: L'\0')
 #define STRLEN(T, arg1) _Generic(((T){0}), \
-    char: strlen,\
+    char: strlen,                          \
     wchar_t: wcslen)(arg1)
 #define STRCMP(T, arg1, arg2) _Generic(((T){0}), \
-    char: strcmp, \
+    char: strcmp,                                \
     wchar_t: wcscmp)(arg1, arg2)
 #define STRNCMP(T, arg1, arg2, arg3) _Generic(((T){0}), \
-    char: strncmp, \
+    char: strncmp,                                      \
     wchar_t: wcsncmp)(arg1, arg2, arg3)
 
 #define DEFINE_STRING(T, N)                                                                         \
@@ -38,9 +38,9 @@
         void (*shrink)(String_##N *);                                                               \
         size_t (*size)(String_##N *);                                                               \
         size_t (*capacity)(String_##N *);                                                           \
-        T* (*at)(String_##N *, size_t);                                                              \
-        T* (*front)(String_##N *);                                                                   \
-        T* (*back)(String_##N *);                                                                    \
+        T *(*at)(String_##N *, size_t);                                                             \
+        T *(*front)(String_##N *);                                                                  \
+        T *(*back)(String_##N *);                                                                   \
         void (*clear)(String_##N *);                                                                \
         void (*push_back)(String_##N *, T);                                                         \
         void (*pop_back)(String_##N *);                                                             \
@@ -52,10 +52,10 @@
         size_t (*find)(String_##N *, const T *, size_t);                                            \
         size_t (*rfind)(String_##N *, const T *, size_t);                                           \
         String_##N *(*substr)(String_##N *, size_t, size_t);                                        \
-        const T* (*c_str)(String_##N *);                                                            \
+        const T *(*c_str)(String_##N *);                                                            \
         int (*compare)(String_##N *, String_##N *);                                                 \
     } String_functions_##N;                                                                         \
-                                                                                                   \
+                                                                                                    \
     static inline String_##N *string_new_string_1_##N();                                            \
     static inline String_##N *string_new_string_2_##N(const T *arr);                                \
     static inline String_##N *string_new_string_3_##N(size_t size, T data);                         \
@@ -68,9 +68,9 @@
     static inline void string_shrink_##N(String_##N *this);                                         \
     static inline size_t string_size_##N(String_##N *this);                                         \
     static inline size_t string_capacity_##N(String_##N *this);                                     \
-    static inline T *string_at_##N(String_##N *this, size_t idx);                                    \
-    static inline T *string_front_##N(String_##N *this);                                             \
-    static inline T *string_back_##N(String_##N *this);                                              \
+    static inline T *string_at_##N(String_##N *this, size_t idx);                                   \
+    static inline T *string_front_##N(String_##N *this);                                            \
+    static inline T *string_back_##N(String_##N *this);                                             \
                                                                                                     \
     static inline void string_clear_##N(String_##N *this);                                          \
     static inline void string_push_back_##N(String_##N *this, T data);                              \
@@ -130,7 +130,7 @@
         if (this == NULL)                                                                           \
             error("failed allocation");                                                             \
                                                                                                     \
-        this->vec = vector_new_vector_4_string_##N(arr, STRLEN(T, arr));                           \
+        this->vec = vector_new_vector_4_string_##N(arr, STRLEN(T, arr));                            \
         this->vec->arr[this->vec->size] = TERMINATOR(T);                                            \
         this->functions = &string_funcs_##N;                                                        \
                                                                                                     \
@@ -152,10 +152,10 @@
                                                                                                     \
     static inline String_##N *string_copy_string_##N(const String_##N *other)                       \
     {                                                                                               \
-        if(other == NULL)\
-            error("copy constructor called on NULL string");\
-        \
-        String_##N *this = string_new_string_1_##N();\
+        if (other == NULL)                                                                          \
+            error("copy constructor called on NULL string");                                        \
+                                                                                                    \
+        String_##N *this = string_new_string_1_##N();                                               \
                                                                                                     \
         this->vec = copy_vector(string_##N, other->vec);                                            \
         this->vec->arr[this->vec->size] = TERMINATOR(T);                                            \
@@ -166,10 +166,10 @@
                                                                                                     \
     static inline String_##N *string_move_string_##N(String_##N *other)                             \
     {                                                                                               \
-        if(other == NULL)\
-            error("move constructor called on NULL string");\
-        \
-        String_##N *this = string_new_string_1_##N();\
+        if (other == NULL)                                                                          \
+            error("move constructor called on NULL string");                                        \
+                                                                                                    \
+        String_##N *this = string_new_string_1_##N();                                               \
                                                                                                     \
         this->vec = move_vector(string_##N, other->vec);                                            \
         this->vec->arr[this->vec->size] = TERMINATOR(T);                                            \
@@ -180,6 +180,9 @@
                                                                                                     \
     static inline void string_delete_string_##N(String_##N *this)                                   \
     {                                                                                               \
+        if (this == NULL)                                                                           \
+            return;                                                                                 \
+                                                                                                    \
         delete_vector(string_##N, this->vec);                                                       \
         free(this);                                                                                 \
     }                                                                                               \
@@ -218,19 +221,19 @@
         return capacity(this->vec);                                                                 \
     }                                                                                               \
                                                                                                     \
-    static inline T *string_at_##N(String_##N *this, size_t idx)                                     \
+    static inline T *string_at_##N(String_##N *this, size_t idx)                                    \
     {                                                                                               \
-        return &at(this->vec, idx);                                                                  \
+        return &at(this->vec, idx);                                                                 \
     }                                                                                               \
                                                                                                     \
-    static inline T *string_front_##N(String_##N *this)                                              \
+    static inline T *string_front_##N(String_##N *this)                                             \
     {                                                                                               \
-        return &front(this->vec);                                                                    \
+        return &front(this->vec);                                                                   \
     }                                                                                               \
                                                                                                     \
-    static inline T *string_back_##N(String_##N *this)                                               \
+    static inline T *string_back_##N(String_##N *this)                                              \
     {                                                                                               \
-        return &back(this->vec);                                                                     \
+        return &back(this->vec);                                                                    \
     }                                                                                               \
                                                                                                     \
     static inline void string_clear_##N(String_##N *this)                                           \
@@ -253,7 +256,7 @@
                                                                                                     \
     static inline void string_insert_3_##N(String_##N *this, size_t idx, const T *arr)              \
     {                                                                                               \
-        insert(this->vec, idx, arr, STRLEN(T, arr));                                               \
+        insert(this->vec, idx, arr, STRLEN(T, arr));                                                \
         this->vec->arr[this->vec->size] = TERMINATOR(T);                                            \
     }                                                                                               \
                                                                                                     \
@@ -286,9 +289,9 @@
         if (this->vec->size <= idx)                                                                 \
             return NPOS;                                                                            \
                                                                                                     \
-        size_t size = STRLEN(T, arr);                                                              \
+        size_t size = STRLEN(T, arr);                                                               \
         for (size_t i = idx; i + size <= this->vec->size; i++)                                      \
-            if (STRNCMP(T, this->vec->arr + i, arr, size) == 0)                                    \
+            if (STRNCMP(T, this->vec->arr + i, arr, size) == 0)                                     \
                 return i;                                                                           \
                                                                                                     \
         return NPOS;                                                                                \
@@ -301,10 +304,10 @@
         if (this->vec->size <= idx)                                                                 \
             return NPOS;                                                                            \
                                                                                                     \
-        size_t size = STRLEN(T, arr);                                                              \
+        size_t size = STRLEN(T, arr);                                                               \
         for (size_t i = idx;; i--)                                                                  \
         {                                                                                           \
-            if (STRNCMP(T, this->vec->arr + i, arr, size) == 0)                                    \
+            if (STRNCMP(T, this->vec->arr + i, arr, size) == 0)                                     \
                 return i;                                                                           \
                                                                                                     \
             if (i == 0)                                                                             \
@@ -321,10 +324,8 @@
         if (this->vec->size <= idx || this->vec->size < idx + size)                                 \
             error("sub-string out of bounds");                                                      \
                                                                                                     \
-        String_##N *ret = string_new_string_1_##N();                                                \
-        const T *cstr = string_c_str_##N(this);                                                  \
-        ret->vec = vector_new_vector_4_string_##N(cstr + idx, size);                                \
-        ret->vec->arr[ret->vec->size] = TERMINATOR(T);                                               \
+        const T *cstr = string_c_str_##N(this);                                                     \
+        String_##N *ret = string_new_string_2_##N(cstr);                                            \
                                                                                                     \
         return ret;                                                                                 \
     }                                                                                               \
@@ -344,7 +345,7 @@
         if (this == NULL || other == NULL)                                                          \
             error("compare called on NULL string");                                                 \
                                                                                                     \
-        return STRCMP(T, string_c_str_##N(this), string_c_str_##N(other));                         \
+        return STRCMP(T, string_c_str_##N(this), string_c_str_##N(other));                          \
     }
 
 #define GET_MACRO(_1, _2, _3, _4, _5, NAME, ...) NAME

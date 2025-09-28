@@ -64,8 +64,10 @@
         if (this == NULL)                                                   \
             error("failed allocation");                                     \
                                                                             \
-        this->ring = new_ring(queue_##N);                                            \
-        this->functions = &queue_funcs_##N;                             \
+        this->ring = new_ring(queue_##N);                                   \
+        this->functions = &queue_funcs_##N;                                 \
+                                                                            \
+        return this;                                                        \
     }                                                                       \
                                                                             \
     static inline Queue_##N *queue_copy_queue_##N(const Queue_##N *other)   \
@@ -74,8 +76,10 @@
         if (this == NULL)                                                   \
             error("failed allocation");                                     \
                                                                             \
-        this->ring = copy_ring(queue_##N, other->ring);                                \
-        this->functions = &queue_funcs_##N;                             \
+        this->ring = copy_ring(queue_##N, other->ring);                     \
+        this->functions = &queue_funcs_##N;                                 \
+                                                                            \
+        return this;                                                        \
     }                                                                       \
                                                                             \
     static inline Queue_##N *queue_move_queue_##N(Queue_##N *other)         \
@@ -84,12 +88,17 @@
         if (this == NULL)                                                   \
             error("failed allocation");                                     \
                                                                             \
-        this->ring = move_ring(queue_##N, other->ring);                                \
-        this->functions = &queue_funcs_##N;                             \
+        this->ring = move_ring(queue_##N, other->ring);                     \
+        this->functions = &queue_funcs_##N;                                 \
+                                                                            \
+        return this;                                                        \
     }                                                                       \
                                                                             \
     static inline void queue_delete_queue_##N(Queue_##N *this)              \
     {                                                                       \
+        if (this == NULL)                                                   \
+            return;                                                         \
+                                                                            \
         delete_ring(ring_##N, this->ring);                                  \
         free(this);                                                         \
     }                                                                       \

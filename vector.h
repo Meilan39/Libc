@@ -10,6 +10,7 @@
 #define VECTOR_RESIZE_ring 0
 #define VECTOR_RESIZE_stack 0
 #define VECTOR_RESIZE_queue 0
+#define VECTOR_RESIZE_heap 0
 
 #define DEFINE_VECTOR(T, N) DEFINE_VECTOR_IMPL(T, N, vector)
 #define DEFINE_VECTOR_IMPL(T, N, E)                                                                  \
@@ -31,9 +32,9 @@
         void (*shrink)(Vector_##N *);                                                                \
         size_t (*size)(Vector_##N *);                                                                \
         size_t (*capacity)(Vector_##N *);                                                            \
-        T* (*at)(Vector_##N *, size_t);                                                               \
-        T* (*front)(Vector_##N *);                                                                    \
-        T* (*back)(Vector_##N *);                                                                     \
+        T *(*at)(Vector_##N *, size_t);                                                              \
+        T *(*front)(Vector_##N *);                                                                   \
+        T *(*back)(Vector_##N *);                                                                    \
         void (*clear)(Vector_##N *);                                                                 \
         void (*push_back)(Vector_##N *, T);                                                          \
         void (*pop_back)(Vector_##N *);                                                              \
@@ -58,9 +59,9 @@
     static inline void vector_shrink_##N(Vector_##N *this);                                          \
     static inline size_t vector_size_##N(Vector_##N *this);                                          \
     static inline size_t vector_capacity_##N(Vector_##N *this);                                      \
-    static inline T *vector_at_##N(Vector_##N *this, size_t idx);                                     \
-    static inline T *vector_front_##N(Vector_##N *this);                                              \
-    static inline T *vector_back_##N(Vector_##N *this);                                               \
+    static inline T *vector_at_##N(Vector_##N *this, size_t idx);                                    \
+    static inline T *vector_front_##N(Vector_##N *this);                                             \
+    static inline T *vector_back_##N(Vector_##N *this);                                              \
                                                                                                      \
     static inline void vector_clear_##N(Vector_##N *this);                                           \
     static inline void vector_push_back_##N(Vector_##N *this, T data);                               \
@@ -94,9 +95,9 @@
         if (this->capacity >= size)                                                                  \
             return;                                                                                  \
                                                                                                      \
-        size_t capacity = this->capacity ? this->capacity : LIBCMAX(size, MEM_INIT_CAPACITY);                                    \
+        size_t capacity = this->capacity ? this->capacity : LIBCMAX(size, MEM_INIT_CAPACITY);        \
         while (capacity < size)                                                                      \
-            capacity *= MEM_GROWTH_MULTIPLIER;                                                    \
+            capacity *= MEM_GROWTH_MULTIPLIER;                                                       \
                                                                                                      \
         this->arr = this->capacity                                                                   \
                         ? realloc(this->arr, capacity * sizeof(T))                                   \
@@ -123,13 +124,10 @@
                                                                                                      \
     static inline Vector_##N *vector_new_vector_2_##N(size_t size)                                   \
     {                                                                                                \
-        Vector_##N *this = malloc(sizeof(Vector_##N));                                               \
-        if (this == NULL)                                                                            \
-            error("allocation failed");                                                              \
+        Vector_##N *this = vector_new_vector_1_##N();                                                \
                                                                                                      \
         vector_grow_##N(this, size);                                                                 \
         this->size = size;                                                                           \
-        this->functions = &vector_funcs_##N;                                                         \
                                                                                                      \
         return this;                                                                                 \
     }                                                                                                \
@@ -161,7 +159,7 @@
         Vector_##N *this = vector_new_vector_1_##N();                                                \
                                                                                                      \
         vector_grow_##N(this, other->capacity);                                                      \
-        memcpy(this->arr, other->arr, other->capacity * sizeof(T));                                      \
+        memcpy(this->arr, other->arr, other->capacity * sizeof(T));                                  \
         this->size = other->size;                                                                    \
                                                                                                      \
         return this;                                                                                 \
@@ -188,9 +186,10 @@
     static inline void vector_delete_vector_##N(Vector_##N *this)                                    \
     {                                                                                                \
         if (this == NULL)                                                                            \
-            error("delete called on NULL " #E);                                                      \
+            return;                                                                                  \
                                                                                                      \
-        free(this->arr);                                                                             \
+        if (this->arr)                                                                               \
+            free(this->arr);                                                                         \
         free(this);                                                                                  \
     }                                                                                                \
                                                                                                      \
@@ -239,34 +238,34 @@
         return this->capacity;                                                                       \
     }                                                                                                \
                                                                                                      \
-    static inline T *vector_at_##N(Vector_##N *this, size_t idx)                                      \
+    static inline T *vector_at_##N(Vector_##N *this, size_t idx)                                     \
     {                                                                                                \
         if (this == NULL)                                                                            \
             error("at called on NULL " #E);                                                          \
         if (this->size <= idx)                                                                       \
             error(#E " index out of bounds");                                                        \
                                                                                                      \
-        return this->arr + idx;                                                                       \
+        return this->arr + idx;                                                                      \
     }                                                                                                \
                                                                                                      \
-    static inline T *vector_front_##N(Vector_##N *this)                                               \
+    static inline T *vector_front_##N(Vector_##N *this)                                              \
     {                                                                                                \
         if (this == NULL)                                                                            \
             error("front called on NULL " #E);                                                       \
         if (this->size == 0)                                                                         \
             error("front called on empty " #E);                                                      \
                                                                                                      \
-        return this->arr;                                                                         \
+        return this->arr;                                                                            \
     }                                                                                                \
                                                                                                      \
-    static inline T *vector_back_##N(Vector_##N *this)                                                \
+    static inline T *vector_back_##N(Vector_##N *this)                                               \
     {                                                                                                \
         if (this == NULL)                                                                            \
             error("back called on NULL " #E);                                                        \
         if (this->size == 0)                                                                         \
             error("back called on emtpy " #E);                                                       \
                                                                                                      \
-        return this->arr + this->size - 1;                                                            \
+        return this->arr + this->size - 1;                                                           \
     }                                                                                                \
                                                                                                      \
     static inline void vector_clear_##N(Vector_##N *this)                                            \

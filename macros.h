@@ -3,6 +3,13 @@
 
 #define GET_MACRO(_1, _2, _3, _4, _5, NAME, ...) NAME
 /**
+ * @brief manually specify the compare method 
+ * @param this container
+ * @param cmp function pointer to type int (cmp*)(const T*, const T*)
+ * @note Availability: heap
+ */
+#define set_compare(this, cmp) this->functions->set_compare(this, cmp); 
+/**
  * @brief check if container is empty
  * @param this container
  * @return 0 if not empty, not 0 if empty
@@ -192,5 +199,11 @@
  * @note Availability: string
  */
 #define compare(this, other) this->functions->compare(this, other)
+/**
+ * @brief construct a heap in O(n)
+ * @param this heap
+ * @note Availability: heap
+ */
+#define heapify(this) this->functions->heapify(this)
 
 #endif // MACROS
